@@ -1,0 +1,16 @@
+package metric.execution;
+
+import metric.Metric;
+public enum GitMetric {
+    AVERAGE_COMMIT_SIZE,
+    AVERAGE_FILE_SIZE,
+    COMMIT_COUNT,
+    COMMITS_ON_MASTER,
+    CONTRIBUTOR_ENTROPY,
+    LINES_OF_CODE,
+    NUMBER_OF_BRANCHES,
+    NUMBER_OF_CONTRIBUTORS,
+    NUMBER_OF_FILES,
+    NUMBER_OF_REFACTORING_COMMITS,
+    PROJECT_DURATION;
+}

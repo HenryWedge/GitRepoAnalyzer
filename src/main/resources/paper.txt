@@ -1,0 +1,160 @@
+\documentclass{article}
+
+% Language setting
+% Replace `english' with e.g. `spanish' to change the document language
+\usepackage[english]{babel}
+
+% Set page size and margins
+% Replace `letterpaper' with `a4paper' for UK/EU standard size
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+% Useful packages
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+
+\title{Allen Metric Repository Mining}
+\author{Hendrik Reiter}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Die Allen-Metrik ist eine Softwarequalitätsmetrik, die auf Basis der konitiven Belastung der Entwickler Komplexität, Kopplung und Kohäsion zu bestimmen. In dieser Arbeit wird untersucht, wie die Allen-Metric mit anderen Metriken eines Softwareprojektes, wie Projektgröße, Projektdauer und Zusammenstellung der Mitarbeiter. Dazu ist ein Werkzeug zur automatisierten Analyse entwickelt worden.
+
+TODO here: Die Ergebnisse.
+\end{abstract}
+
+\section{Introduction}
+
+Einordnung in Software-Engineering / Problematik
+
+\section{Allen-Metrik}
+
+Psychologie/Kognitive Last
+
+Graphabstraktion
+
+Complexity
+
+Cohesion
+
+Coupling
+
+Beispiel
+
+\section{Git-Metriken}
+
+Um weitere Meta-Informationen über die Repositories zu sammeln, werden mit dem Versionsverwaltungs-Werkzeug git automatisiert Meta-Daten extrahiert. Die Metriken, ihre Definition und ihre Intention werden in der folgenden Tabelle dargestellt:
+
+\begin{table}%[H]
+    \centering
+    \caption{caption}
+    \label{my-label}
+    \begin{tabular}{p{40mm}|p{60mm}|p{60mm}}
+        Metrik & Definition & Intention \\
+        \hline
+         AverageCommitSize & Durchschnittliche Anzahl der Java-Dateien pro Commit. & Sehr lange und sehr schoene Intettion \\
+         AverageFileSize & Durchschnittliche Anzahl der Zeilen der Java-Dateien & \\
+         CommitCount & Anzahl der Commits in dem Repository & \\
+         CommitsOnMaster & Anzahl der Commits auf dem Haupt-Branch des Repositories & \\
+         ContributorEntropy & Entropie Commits aufgeteilt anhand der Email Adressen des Committers & \\
+         LinesOfCode & Anzahl der Zeilen der Java-Datein im gesamten Repository & \\
+         NumberOfBranches & Anzahl der (nicht-gelöschten) Remote-Branches & \\
+         NumberOfContributor & Anzahl der Mitarbeitenden & \\
+         NumberOfFiles & Anzahl der java-Dateien in dem Projekt & \\
+         ProjectDuration & Zeit zwischen dem ersten und dem letzten Commit & \\
+    \end{tabular}
+\end{table}
+
+\section{Methodik}
+
+Das Ziel der Arbeit ist es den Zusammenhang der Allen-Metrik mit den Git-Metriken
+zu analysieren. Dazu ist ein Programm entworfen worden, welches die Allen-Metriken und die Git-Metriken automatisiert für eine eingegebene Liste von Git-Repository-URLs berechnet.
+Die Ergebnisse dieses Programms werden in einem Jupyter-Notebook als Diagramm angezeigt.
+Die Korrelation zwischen Kopplung, Kohäsion, Komplexität, Graphgröße der Allen-Metrik werden mit denen der Git-Metriken mithilfe des Pearson-Korrelationskoeffizienten berechnet.
+
+\subsection{JGit}
+
+\subsection{Refactoralizer}
+
+
+\subsection{Pearson Korrelationskoeffizient}
+
+
+Projektspezifika:
+
+Ausschluss der Testklassen über den Test im Klassennamen
+
+Korrelationsanalyse nach Pearson
+
+Auswahl und Auflistung der Repositories
+
+\section{Ergebnisse}
+
+Ergebnisse: \\
+- Cohesion kann bei den meiten Projekten nicht berechnet werden
+- Coupling, GraphSize und Coupling sagen dasselbe aus
+- Coupling Korrelliert mit der Anzahl der Commits
+- Coupling Korreliert mit Lines of code
+- Coupling Korreliert mit Anzahl der Files
+
+- Beispiel für Projekt mit weniger Komplexität als nach Anzahl der Files zu erwarten gewesen wäre: google-j2objc
+
+- Beispiel für Projekt mit mehr Komplexität als nach Anzahl der Files zu erwarten gewesen wäre: apache-doris (?)
+
+Mehr number of files als Komplexität:
+- apache doris
+- jenkinsci-jenkins
+- spring-projects-spring-boot
+
+
+Tabelle der linearen Korrelationen: \newline
+
+\begin{tabular}[h]{lc}
+Metrik & Korrelation \\
+AverageCommitSize  & 0.43 \\
+AverageFileSize & 0.43 \\
+CommitCount & 0.43 \\
+CommitsOnMaster & 0.43 \\
+ContributorEntropy & 0.43 \\
+LinesOfCode & 0.43 \\
+NumberOfBranches & 0.43 \\
+NumberOfContributor & 0.43 \\
+NumberOfFiles & 0.43 \\
+ProjectDuration & 0.43 \\
+\end{tabular} \\ \newline
+
+Beschreibung der Korrelationen
+
+\subsection{Korrelationsanalyse}
+
+\subsection{Limitationen}
+
+\subsection{Ausreisser Analyse}
+
+\section{Zusammenfassung und Ausblick}
+
+Allen Metrik nicht zu gebrauchen :(
+
+
+Analyse weiterer git-Metriken
+Weitergehende Analyse der Ausreißer
+Anzahl Refactoring Commits etc..
+
+\bibliographystyle{alpha}
+\bibliography{sample}
+
+\section{Anleitung für Analyse-Werkzeug}
+
+Erweiterbarkeit des Tools
+
+TODOs:
+
+Mehrere Package-Ebenen
+Cohesion für kleinere Projekte ausprobieren
+Interpretation der Gleichheit der Compelexity und der anderen Metriken
+Vielleicht eine Lauifzeitanalyse der Allen-Metrik
+AverageCommitSize fixen
+
+\end{document}
