@@ -5,7 +5,7 @@ import java.io.IOException;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 public class CloneRepositoryLoader implements RepositoryLoader {
-    private static final int waitingInterval = 5;
+    private static final int WAITING_INTERVAL = 5;
 
     private final String repositoryUri;
 
@@ -27,8 +27,8 @@ public class CloneRepositoryLoader implements RepositoryLoader {
 
         int i = 0;
         while ( thread.isAlive() ) {
-            Thread.sleep(waitingInterval * 1000);
-            i += waitingInterval;
+            Thread.sleep(WAITING_INTERVAL * 1000);
+            i += WAITING_INTERVAL;
             System.out.printf("Cloning repository for %d seconds. Please wait! \n", i);
         }
         thread.join();

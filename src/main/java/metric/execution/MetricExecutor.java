@@ -9,7 +9,6 @@ import static metric.execution.Metric.GIT_AVERAGE_FILE_SIZE;
 import static metric.execution.Metric.GIT_COMMIT_COUNT;
 import static metric.execution.Metric.GIT_CONTRIBUTOR_ENTROPY;
 import static metric.execution.Metric.GIT_LINES_OF_CODE;
-import static metric.execution.Metric.GIT_NUMBER_OF_BRANCHES;
 import static metric.execution.Metric.GIT_NUMBER_OF_CONTRIBUTORS;
 import static metric.execution.Metric.GIT_NUMBER_OF_FILES;
 import static metric.execution.Metric.GIT_PROJECT_DURATION;
@@ -28,7 +27,6 @@ import metric.AverageFileSizeMetric;
 import metric.CommitCountMetric;
 import metric.ContributorEntropyMetric;
 import metric.LinesOfCodeMetric;
-import metric.NumberOfBranchesMetric;
 import metric.NumberOfContributorsMetric;
 import metric.NumberOfFilesMetric;
 import metric.ProjectDurationMetric;
@@ -94,9 +92,6 @@ public class MetricExecutor {
             }
             if (metricSettings.contains(GIT_LINES_OF_CODE)) {
                 linesOfCodeMetricResult = new LinesOfCodeMetric(projectDir).getResult(git);
-            }
-            if (metricSettings.contains(GIT_NUMBER_OF_BRANCHES)) {
-                numberOfBranchesMetricResult = new NumberOfBranchesMetric().getResult(git);
             }
             if (metricSettings.contains(GIT_NUMBER_OF_CONTRIBUTORS)) {
                 numberOfContributorsMetricResult = new NumberOfContributorsMetric().getResult(git);

@@ -16,7 +16,6 @@ public class JsonOutput {
 
     public void writeResults(final String projectName, final MetricExecutor metricExecutor) throws IOException {
         final ObjectMapper objectMapper = new ObjectMapper();
-        //Files.copy(Path.of(outFile), Path.of("src\\main\\resources\\result_backup.json"), REPLACE_EXISTING);
         TypeReference<HashMap<String, Object>> typeRef = new TypeReference<>() {
         };
         final File resultsFile = new File(outFile);

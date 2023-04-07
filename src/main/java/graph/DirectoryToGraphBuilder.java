@@ -1,6 +1,5 @@
 package graph;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -12,13 +11,15 @@ import com.google.common.graph.Graph;
 import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.MutableGraph;
 import parser.ASTParser;
-public abstract class DirectoryToGraphBuilder {
+public class DirectoryToGraphBuilder {
+
+    
     public Graph<Node<String>> calculate(final String directory) {
 
         final ASTParser astParser = new ASTParser();
 
         final List<CompilationUnit> compilationUnits = astParser.getCompilationUnits(directory, null);
-        final Map<String, Set<String>> importsGraph = buildGraph(compilationUnits);
+        final Map<String, Set<String>> importsGraph = new MyGraphBuilder("Test").buildFullyQualified(compilationUnits);
 
         final MutableGraph<Node<String>> graph = GraphBuilder
             .directed()
@@ -39,21 +40,6 @@ public abstract class DirectoryToGraphBuilder {
         return graph;
     }
 
-    private String buildNModule(final String packageName, final int n) {
-        final List<String> packagePath = Arrays.asList(packageName.split("\\."));
-
-        final StringBuilder modulName = new StringBuilder();
-        for ( int i = 0; i < n; i++ ) {
-            if (i < packagePath.size()) {
-                modulName.append(packagePath.get(i));
-                modulName.append(".");
-            }
-        }
-
-        modulName.delete(modulName.length() - 1, modulName.length());
-        return modulName.toString();
-    }
-
     private boolean filterImportGraph(Map<String, Set<String>> importsGraph, final String importModul) {
         return importsGraph
             .keySet()
@@ -61,5 +47,4 @@ public abstract class DirectoryToGraphBuilder {
             .anyMatch(importModul::contains);
     }
 
-    protected abstract Map<String, Set<String>> buildGraph(List<CompilationUnit> compilationUnits);
 }

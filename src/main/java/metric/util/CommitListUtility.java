@@ -1,4 +1,4 @@
-package git.commit;
+package metric.util;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -7,7 +7,8 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.revwalk.RevCommit;
 
-public class CommitList {
+public class CommitListUtility {
+
     public static List<RevCommit> get(final Git git) {
         final ArrayList<RevCommit> commits = new ArrayList<>();
         try {

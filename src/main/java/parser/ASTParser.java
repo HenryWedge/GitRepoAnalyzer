@@ -37,7 +37,6 @@ public class ASTParser {
                 try {
                     return StaticJavaParser.parse(new File(source));
                 } catch ( final FileNotFoundException | ParseProblemException | StackOverflowError e ) {
-                    //e.printStackTrace();
                     return null;
                 }
             })

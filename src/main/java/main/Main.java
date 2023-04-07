@@ -6,20 +6,17 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import org.eclipse.jgit.api.Git;
 import org.mosim.refactorlizar.architecture.evaluation.graphs.Node;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.google.common.graph.Graph;
-import graph.FullyQualifiedGraphBuilder;
+import graph.DirectoryToGraphBuilder;
 import metric.execution.Metric;
 import metric.execution.MetricExecutor;
 import metric.execution.MetricSettings;
-import output.ConsoleOutput;
 import output.JsonOutput;
-import output.Output;
 import repositoryloader.CloneRepositoryLoader;
 import repositoryloader.OpenRepositoryLoader;
 
@@ -44,7 +41,6 @@ public class Main {
     boolean includeAllMetrics = true;
 
     private void run() throws IOException, InterruptedException {
-        final Output out = new ConsoleOutput();
         final List<String> repositoryUris = readRepositoriesFromFile(repositoryFileName);
 
         for ( final String repositoryUri : repositoryUris ) {
@@ -55,22 +51,22 @@ public class Main {
             if (new File(directory).exists()) {
                 git = new OpenRepositoryLoader(directory).loadRepository();
                 if (skipAlreadyAnalysedProjects) {
-                    out.println(String.format("Project %s was skipped", projectName));
+                    System.out.printf("Project %s was skipped", projectName);
                     continue;
                 }
             } else {
                 git = new CloneRepositoryLoader(repositoryUri, new File(directory)).loadRepository();
-                out.println("Cloning Finished");
+                System.out.println("Cloning Finished");
             }
 
-            final Graph<Node<String>> graph = new FullyQualifiedGraphBuilder().calculate(directory);
+            final Graph<Node<String>> graph = new DirectoryToGraphBuilder().calculate(directory);
             final MetricExecutor metricExecutor = new MetricExecutor(git, directory + "\\", graph, projectName, buildMetricSettings());
             metricExecutor.execute();
 
             System.out.printf("Start analysing: %s\n", projectName);
             System.out.println(metricExecutor);
             new JsonOutput(resultFile).writeResults(projectName, metricExecutor);
-            out.println("Finished");
+            System.out.println("Finished");
         }
     }
 
