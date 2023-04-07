@@ -1,30 +1,51 @@
 package main;
 
+import static java.util.stream.Collectors.toList;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.eclipse.jgit.api.Git;
-import org.mosim.refactorlizar.architecture.evaluation.CalculationMode;
-import org.mosim.refactorlizar.architecture.evaluation.cohesion.HyperGraphCohesionCalculator;
 import org.mosim.refactorlizar.architecture.evaluation.graphs.Node;
-import allen.MySystemGraphUtil;
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
 import com.google.common.graph.Graph;
 import graph.FullyQualifiedGraphBuilder;
+import metric.execution.Metric;
 import metric.execution.MetricExecutor;
+import metric.execution.MetricSettings;
 import output.ConsoleOutput;
 import output.JsonOutput;
 import output.Output;
 import repositoryloader.CloneRepositoryLoader;
 import repositoryloader.OpenRepositoryLoader;
-public class Main {
-    public static void main(String[] args) throws IOException, InterruptedException {
-        final Output out = new ConsoleOutput();
-        final boolean skipAlreadyAnalysedProjects = false;
-        final List<String> repositoryUris = getRepositoryUris();
 
-        final Graph<Node<String>> graph2 = new FullyQualifiedGraphBuilder().calculate("output\\test");
-        new HyperGraphCohesionCalculator<>(CalculationMode.NO_OFFSET, new MySystemGraphUtil()).calculate(graph2);
+public class Main {
+
+    @Parameter(names = {"-s", "--skip"}, description = "")
+    boolean skipAlreadyAnalysedProjects = false;
+
+    @Parameter(names = {"-r", "--repo"}, description = "")
+    String repositoryFileName = "src\\main\\resources\\repository.txt";
+
+    @Parameter(names = {"-o", "--output"}, description = "")
+    String resultFile = "src\\main\\resources\\result_corrected.json";
+
+    @Parameter(names = {"-i", "--include"}, description = "")
+    List<String> includeList = new ArrayList<>();
+
+    @Parameter(names = {"-e", "--exclude"}, description = "")
+    List<String> excludeList = new ArrayList<>();
+
+    @Parameter(names = {"-a", "--all"}, description = "")
+    boolean includeAllMetrics = true;
+
+    private void run() throws IOException, InterruptedException {
+        final Output out = new ConsoleOutput();
+        final List<String> repositoryUris = readRepositoriesFromFile(repositoryFileName);
 
         for ( final String repositoryUri : repositoryUris ) {
             final String projectName = formatUriToProjectName(repositoryUri);
@@ -43,90 +64,59 @@ public class Main {
             }
 
             final Graph<Node<String>> graph = new FullyQualifiedGraphBuilder().calculate(directory);
-            new HyperGraphCohesionCalculator<>(CalculationMode.NO_OFFSET, new MySystemGraphUtil()).calculate(graph);
-
-            final MetricExecutor metricExecutor = new MetricExecutor(git, directory + "\\", graph, projectName);
+            final MetricExecutor metricExecutor = new MetricExecutor(git, directory + "\\", graph, projectName, buildMetricSettings());
             metricExecutor.execute();
 
             System.out.printf("Start analysing: %s\n", projectName);
             System.out.println(metricExecutor);
-            new JsonOutput().writeResults(projectName, metricExecutor);
+            new JsonOutput(resultFile).writeResults(projectName, metricExecutor);
             out.println("Finished");
         }
     }
 
-    private static List<String> getRepositoryUris() {
-        // https://medium.com/issuehunt/50-top-java-projects-on-github-adbfe9f67dbc
-        return Arrays.asList(
-            "https://github.com/square/retrofit.git",
-            //"https://github.com/elastic/elasticsearch.git",
-            "https://github.com/square/okhttp.git",
-            "https://github.com/google/guava.git",
-            "https://github.com/PhilJay/MPAndroidChart.git",
-            "https://github.com/bumptech/glide.git",
-            //"https://github.com/spring-projects/spring-framework.git",
-            "https://github.com/JakeWharton/butterknife.git",
-            "https://github.com/airbnb/lottie-android.git",
-            "https://github.com/square/leakcanary.git",
-            "https://github.com/apache/dubbo.git",
-            "https://github.com/zxing/zxing.git",
-            "https://github.com/greenrobot/EventBus.git",
-            "https://github.com/Blankj/AndroidUtilCode.git",
-            "https://github.com/nostra13/Android-Universal-Image-Loader.git",
-            "https://github.com/square/picasso.git",
-            "https://github.com/skylot/jadx.git",
-            "https://github.com/facebook/fresco.git",
-            "https://github.com/netty/netty.git",
-            "https://github.com/libgdx/libgdx.git",
-            "https://github.com/Netflix/Hystrix.git",
-            "https://github.com/alibaba/fastjson.git",
-            "https://github.com/CymChad/BaseRecyclerViewAdapterHelper.git",
-            "https://github.com/afollestad/material-dialogs.git",
-            "https://github.com/Baseflow/PhotoView.git",
-            "https://github.com/Tencent/tinker.git",
-            "https://github.com/lgvalle/Material-Animations.git",
-            //"https://github.com/nickbutcher/plaid",
-            //"https://github.com/jfeinstein10/SlidingMenu.git",
-            "https://github.com/jenkinsci/jenkins.git",
-            "https://github.com/google/ExoPlayer.git",
-            "https://github.com/greenrobot/greenDAO.git",
-            "https://github.com/realm/realm-java.git",
-            //"https://github.com/orhanobut/logger.git",
-            "https://github.com/bazelbuild/bazel.git",
-            "https://github.com/mybatis/mybatis-3.git",
-            "https://github.com/square/dagger.git",
-            "https://github.com/google/guice.git",
-            "https://github.com/google/auto.git",
-            "https://github.com/junit-team/junit4.git",
-            "https://github.com/mockito/mockito.git",
-            "https://github.com/square/javapoet.git",
-            "https://github.com/OpenRefine/OpenRefine.git",
-            "https://github.com/google/j2objc.git",
-            "https://github.com/facebookarchive/rebound.git",
-            "https://github.com/scribejava/scribejava.git",
-            "https://github.com/square/moshi.git",
-            "https://github.com/socketio/socket.io-client-java.git",
-            "https://github.com/spring-projects/spring-boot.git",
-            "https://github.com/eclipse/jetty.project.git",
-            "https://github.com/apache/doris.git",
-            "https://github.com/checkstyle/checkstyle.git",
-            //"https://github.com/opensearch-project/OpenSearch.git",
-            "https://github.com/testcontainers/testcontainers-java.git",
-            "https://github.com/lax1dude/eaglercraftx-1.8.git",
-            "https://github.com/apache/pinot.git",
-            "https://github.com/alibaba/spring-cloud-alibaba.git",
-            "https://github.com/apache/hive.git",
-            "https://github.com/TheoKanning/openai-java.git",
-            "https://github.com/apache/rocketmq.git",
-            //"https://github.com/apache/flink.git",
-            "https://github.com/apache/incubator-seatunnel.git",
-            "https://github.com/apache/kafka.git",
-            "https://github.com/apache/dolphinscheduler.git",
-            "https://github.com/dromara/ChatGPT.git",
-            "https://github.com/ReactiveX/RxJava.git");
+    private MetricSettings buildMetricSettings() {
+        final MetricSettings metricSettings;
+
+        if (includeAllMetrics) {
+            metricSettings = MetricSettings.createComplete();
+        } else if (!includeList.isEmpty()) {
+            metricSettings = MetricSettings.createIncluding(includeList
+                                                                .stream()
+                                                                .map(Metric::valueOf)
+                                                                .collect(toList()));
+        } else if (!excludeList.isEmpty()) {
+            metricSettings = MetricSettings.createIncluding(excludeList
+                                                                .stream()
+                                                                .map(Metric::valueOf)
+                                                                .collect(toList()));
+        } else {
+            throw new IllegalStateException();
+        }
+        return metricSettings;
     }
 
-    private static String formatUriToProjectName(final String uri) {
+
+    private List<String> readRepositoriesFromFile(final String fileName) {
+        final List<String> repositories = new ArrayList<>();
+        try {
+            final BufferedReader reader = new BufferedReader(new FileReader(fileName));
+            String line = reader.readLine();
+
+            while ( line != null ) {
+                if (!line.startsWith("#")) {
+                    repositories.add(line);
+                }
+                line = reader.readLine();
+            }
+
+            reader.close();
+        } catch ( IOException e ) {
+            e.printStackTrace();
+        }
+        return repositories;
+    }
+
+    private String formatUriToProjectName(final String uri) {
         return uri
             .replaceFirst("https://github\\.com/", "")
             .replaceFirst("\\.git", "")
@@ -134,7 +124,16 @@ public class Main {
             .replace("/", "-");
     }
 
-    //final List<String> failingRepositoryUris =
-    //    Arrays.asList(//"https://github.com/elastic/elasticsearch.git",
-    //                  "https://github.com/kunal-kushwaha/DSA-Bootcamp-Java.git");
+    public static void main(String[] args) throws IOException, InterruptedException {
+        final Main main = new Main();
+
+        JCommander
+            .newBuilder()
+            .addObject(main)
+            .build()
+            .parse(args);
+
+        main.run();
+    }
+
 }

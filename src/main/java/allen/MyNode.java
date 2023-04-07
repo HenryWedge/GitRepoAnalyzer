@@ -9,6 +9,7 @@ public class MyNode implements Node<String> {
 
     public MyNode(final String module) {
         final String[] split = module.split("\\.");
+
         this.packageName = Arrays
             .asList(split)
             .subList(0, split.length - 1)
