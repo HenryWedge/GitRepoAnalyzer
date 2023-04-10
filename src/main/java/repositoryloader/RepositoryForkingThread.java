@@ -10,8 +10,6 @@ public class RepositoryForkingThread implements Runnable{
 
     private final File outputFile;
 
-    private boolean hasResult = false;
-
     private Git git;
 
     public RepositoryForkingThread(final String repositoryUri, final File outputFile) {
@@ -27,14 +25,9 @@ public class RepositoryForkingThread implements Runnable{
                 .setURI(repositoryUri)
                 .setDirectory(outputFile)
                 .call();
-            hasResult = true;
-        } catch ( GitAPIException e ) {
+        } catch ( final GitAPIException e ) {
             throw new IllegalStateException(e);
         }
-    }
-
-    public boolean hasResult() {
-        return hasResult;
     }
 
     public Git getResult() {

@@ -13,13 +13,18 @@ import com.google.common.graph.MutableGraph;
 import parser.ASTParser;
 public class DirectoryToGraphBuilder {
 
-    
+    final List<String> forbiddenClassNamePattern;
+
+    public DirectoryToGraphBuilder(final List<String> forbiddenTestPattern) {
+        this.forbiddenClassNamePattern = forbiddenTestPattern;
+    }
+
     public Graph<Node<String>> calculate(final String directory) {
 
         final ASTParser astParser = new ASTParser();
 
         final List<CompilationUnit> compilationUnits = astParser.getCompilationUnits(directory, null);
-        final Map<String, Set<String>> importsGraph = new MyGraphBuilder("Test").buildFullyQualified(compilationUnits);
+        final Map<String, Set<String>> importsGraph = new MyGraphBuilder(forbiddenClassNamePattern).buildFullyQualified(compilationUnits);
 
         final MutableGraph<Node<String>> graph = GraphBuilder
             .directed()

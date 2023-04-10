@@ -23,8 +23,8 @@ import com.github.javaparser.ast.nodeTypes.NodeWithName;
 public class MyGraphBuilder {
     private final List<String> forbiddenPatternList;
 
-    public MyGraphBuilder(final String... forbiddenPatternList) {
-        this.forbiddenPatternList = Arrays.asList(forbiddenPatternList);
+    public MyGraphBuilder(final List<String> forbiddenPatternList) {
+        this.forbiddenPatternList = forbiddenPatternList;
     }
 
     public Map<String, Set<String>> buildFullyQualified(final List<CompilationUnit> compilationUnitList) {
@@ -133,7 +133,7 @@ public class MyGraphBuilder {
             .map(SimpleName::asString)
             .map(name -> forbiddenPatternList
                 .stream()
-                .noneMatch(name::contains))
+                .noneMatch(name::matches))
             .orElse(false);
     }
 

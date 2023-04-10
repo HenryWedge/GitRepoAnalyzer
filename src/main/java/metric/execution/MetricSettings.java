@@ -1,10 +1,11 @@
 package metric.execution;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 public class MetricSettings {
 
-    List<Metric> evaluatedMetrics;
+    List<Metric> evaluatedMetrics = new ArrayList<>();
 
     private MetricSettings() {
     }
@@ -23,7 +24,7 @@ public class MetricSettings {
 
     public static MetricSettings createComplete() {
         final MetricSettings metricSettings = new MetricSettings();
-        metricSettings.evaluatedMetrics = Arrays.asList(Metric.values());
+        metricSettings.evaluatedMetrics.addAll(Arrays.asList(Metric.values()));
         return metricSettings;
     }
 

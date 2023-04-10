@@ -25,11 +25,11 @@ public class Main {
     @Parameter(names = {"-s", "--skip"}, description = "")
     boolean skipAlreadyAnalysedProjects = false;
 
-    @Parameter(names = {"-r", "--repo"}, description = "")
+    @Parameter(names = {"-r", "--repo"}, required = true, description = "")
     String repositoryFileName = "src\\main\\resources\\repository.txt";
 
-    @Parameter(names = {"-o", "--output"}, description = "")
-    String resultFile = "src\\main\\resources\\result_corrected.json";
+    @Parameter(names = {"-o", "--output"}, required = true, description = "")
+    String resultFile = "src\\main\\resources\\result.json";
 
     @Parameter(names = {"-i", "--include"}, description = "")
     List<String> includeList = new ArrayList<>();
@@ -38,7 +38,10 @@ public class Main {
     List<String> excludeList = new ArrayList<>();
 
     @Parameter(names = {"-a", "--all"}, description = "")
-    boolean includeAllMetrics = true;
+    boolean includeAllMetrics = false;
+
+    @Parameter(names = {"-f", "--forbidden"})
+    List<String> forbiddenClassNameRegexList;
 
     private void run() throws IOException, InterruptedException {
         final List<String> repositoryUris = readRepositoriesFromFile(repositoryFileName);
@@ -59,7 +62,7 @@ public class Main {
                 System.out.println("Cloning Finished");
             }
 
-            final Graph<Node<String>> graph = new DirectoryToGraphBuilder().calculate(directory);
+            final Graph<Node<String>> graph = new DirectoryToGraphBuilder(forbiddenClassNameRegexList).calculate(directory);
             final MetricExecutor metricExecutor = new MetricExecutor(git, directory + "\\", graph, projectName, buildMetricSettings());
             metricExecutor.execute();
 
@@ -81,7 +84,7 @@ public class Main {
                                                                 .map(Metric::valueOf)
                                                                 .collect(toList()));
         } else if (!excludeList.isEmpty()) {
-            metricSettings = MetricSettings.createIncluding(excludeList
+            metricSettings = MetricSettings.createExcluding(excludeList
                                                                 .stream()
                                                                 .map(Metric::valueOf)
                                                                 .collect(toList()));
@@ -90,7 +93,6 @@ public class Main {
         }
         return metricSettings;
     }
-
 
     private List<String> readRepositoriesFromFile(final String fileName) {
         final List<String> repositories = new ArrayList<>();
@@ -106,7 +108,7 @@ public class Main {
             }
 
             reader.close();
-        } catch ( IOException e ) {
+        } catch ( final IOException e ) {
             e.printStackTrace();
         }
         return repositories;
