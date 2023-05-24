@@ -26,10 +26,10 @@ public class Main {
     boolean skipAlreadyAnalysedProjects = false;
 
     @Parameter(names = {"-r", "--repo"}, required = true, description = "")
-    String repositoryFileName = "src\\main\\resources\\repository.txt";
+    String repositoryFileName = "src" + File.separator + "main" + File.separator + "resources" + File.separator + "repository.txt";
 
     @Parameter(names = {"-o", "--output"}, required = true, description = "")
-    String resultFile = "src\\main\\resources\\result.json";
+    String resultFile = "src" + File.separator + "main" + File.separator + "resources" + File.separator + "result.json";
 
     @Parameter(names = {"-i", "--include"}, description = "")
     List<String> includeList = new ArrayList<>();
@@ -48,7 +48,7 @@ public class Main {
 
         for ( final String repositoryUri : repositoryUris ) {
             final String projectName = formatUriToProjectName(repositoryUri);
-            final String directory = String.format("output\\%s", projectName);
+            final String directory = String.format("output%s%s", File.separator, projectName);
 
             final Git git;
             if (new File(directory).exists()) {
@@ -63,10 +63,10 @@ public class Main {
             }
 
             final Graph<Node<String>> graph = new DirectoryToGraphBuilder(forbiddenClassNameRegexList).calculate(directory);
-            final MetricExecutor metricExecutor = new MetricExecutor(git, directory + "\\", graph, projectName, buildMetricSettings());
+            final MetricExecutor metricExecutor = new MetricExecutor(git, directory + File.separator, graph, projectName, buildMetricSettings());
             metricExecutor.execute();
 
-            System.out.printf("Start analysing: %s\n", projectName);
+            System.out.printf("Start analysing: %s%s", projectName, System.lineSeparator());
             System.out.println(metricExecutor);
             new JsonOutput(resultFile).writeResults(projectName, metricExecutor);
             System.out.println("Finished");
